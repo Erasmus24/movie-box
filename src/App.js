@@ -10,8 +10,9 @@ const App = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Load some movies initially, like "Avengers"
   useEffect(() => {
-    searchMovies("Movies");
+    searchMovies("Avengers");
   }, []);
 
   const searchMovies = async (title) => {
