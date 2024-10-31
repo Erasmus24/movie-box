@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from "react";
-
-
-
 import MovieCard from "./MovieCard";
 import SearchIcon from "./search.svg";
 import "./App.css";
-
-
 
 const API_URL = `http://www.omdbapi.com/?i=tt3896198&apikey=4beac9dd`;
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     searchMovies("Movies");
   }, []);
 
   const searchMovies = async (title) => {
-    const response = await fetch(`${API_URL}&s=${title}`);
-    const data = await response.json();
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}&s=${title}`);
+      const data = await response.json();
 
-    setMovies(data.Search);
+      if (data.Response === "True") {
+        setMovies(data.Search);
+      } else {
+        setMovies([]);
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+      setMovies([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,10 +55,14 @@ const App = () => {
         />
       </div>
 
-      {movies?.length > 0 ? (
+      {loading ? (
+        <div className="loading">
+          <h2>Loading...</h2>
+        </div>
+      ) : movies?.length > 0 ? (
         <div className="container">
           {movies.map((movie) => (
-            <MovieCard movie={movie} />
+            <MovieCard key={movie.imdbID} movie={movie} />
           ))}
         </div>
       ) : (
